@@ -1,5 +1,4 @@
 name: Deploy AWS Config Rule via CloudFormation
-
 on:
   push:
     paths:
