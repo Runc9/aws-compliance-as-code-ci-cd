@@ -1,0 +1,26 @@
+name: Validate Config Rule Definitions
+
+on:
+  push:
+    paths:
+      - 'config-rules/**'
+      - 'deploymentTargets.yaml'
+  pull_request:
+    paths:
+      - 'config-rules/**'
+      - 'deploymentTargets.yaml'
+
+jobs:
+  validate-rules:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Validate JSON format in config-rules/
+        run: |
+          for file in config-rules/*.json; do
+            echo "Validating $file"
+            jq empty "$file"
+          done

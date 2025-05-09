@@ -1,0 +1,13 @@
+rules:
+  - name: cis-1-4-1-iam-password-policy
+    identifier: IAM_PASSWORD_POLICY
+    accounts:
+      - 111111111111  # Dev
+      - 222222222222  # Prod
+    regions:
+      - us-east-1
+      - eu-west-1
+    tags:
+      Framework: CIS AWS Foundations Benchmark
+      Control: "1.4.1"
+      Category: IAM
