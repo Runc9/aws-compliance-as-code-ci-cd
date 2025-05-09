@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Deploy a managed AWS Config rule
+
+Parameters:
+  ConfigRuleName:
+    Type: String
+  RuleIdentifier:
+    Type: String
+  InputParameters:
+    Type: String
+    Default: '{}'
+  MaximumExecutionFrequency:
+    Type: String
+    Default: One_Hour
+  ScopeComplianceResourceTypes:
+    Type: CommaDelimitedList
+    Default: ""
+
+Resources:
+  ConfigRule:
+    Type: AWS::Config::ConfigRule
+    Properties:
+      ConfigRuleName: !Ref ConfigRuleName
+      Description: !Sub "Managed rule: ${RuleIdentifier}"
+      Source:
+        Owner: AWS
+        SourceIdentifier: !Ref RuleIdentifier
+      InputParameters: !Ref InputParameters
+      MaximumExecutionFrequency: !Ref MaximumExecutionFrequency
+      Scope:
+        ComplianceResourceTypes: !Ref ScopeComplianceResourceTypes
+
+Outputs:
+  RuleName:
+    Value: !Ref ConfigRuleName

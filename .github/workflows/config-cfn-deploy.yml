@@ -1,0 +1,35 @@
+name: Deploy AWS Config Rule via CloudFormation
+
+on:
+  push:
+    paths:
+      - 'config-rules/**'
+      - 'templates/**'
+
+jobs:
+  deploy-config-rule:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Deploy Config Rule to AWS
+      run: |
+        aws cloudformation deploy \
+          --template-file templates/config-rule-template.yaml \
+          --stack-name cis-1-4-1-password-policy-rule \
+          --region us-east-1 \
+          --capabilities CAPABILITY_NAMED_IAM \
+          --parameter-overrides \
+            ConfigRuleName="cis-1-4-1-iam-password-policy" \
+            RuleIdentifier="IAM_PASSWORD_POLICY" \
+            InputParameters='{"RequireUppercaseCharacters":"true","RequireLowercaseCharacters":"true","RequireSymbols":"true","RequireNumbers":"true","MinimumPasswordLength":"14","PasswordReusePrevention":"24","MaxPasswordAge":"90"}' \
+            ScopeComplianceResourceTypes="AWS::IAM::User"
