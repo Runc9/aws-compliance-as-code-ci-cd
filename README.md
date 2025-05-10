@@ -1,48 +1,66 @@
-# 🛡️ Compliance-Aware Multi-Region AWS Config Deployment Pipeline
+# 🛡️ AWS Config Rule CI/CD Deployment Pipeline (GRC Engineering)
+![Deploy Workflow](https://github.com/Runc9/aws-config-rule-cicd-for-multi-region-grc/actions/workflows/config-rule-deploy.yml/badge.svg)
 
-> 🎯 **Scenario**: You're a GRC engineer managing 100+ AWS accounts across 3+ regions. You need to enforce CIS, NIST, and ISO compliance — not manually, but through automated Config rules as code. This repo shows you how.
+## 1. 🧠 Overview
 
-![Framework: NIST 800-53](https://img.shields.io/badge/NIST-800--53-blue)
-![CIS Benchmarks](https://img.shields.io/badge/CIS-v8-green)
-![Status](https://img.shields.io/badge/Deployment-MultiRegion-orange)
-![Type](https://img.shields.io/badge/GRC--Engineering-Project-critical)
+> Imagine your organization must enforce IAM password policy compliance across all AWS environments — but manual rule creation won’t scale, and audit fatigue is growing.
 
----
+As a GRC Engineer, your mission is to:
+- Convert security policy into an automated AWS Config rule
+- Deploy it via CloudFormation through GitHub Actions
+- Ensure changes are tracked, tested, and enforced as code
 
-## 🔧 What This Does
+This project builds a real-world **Compliance-as-Code pipeline** that deploys managed AWS Config rules based on Git commits — traceable, testable, and auditable.
+## 2. 🧩 Architecture Diagram
 
-- ✅ Deploys **AWS Config rules** to multiple AWS accounts and regions
-- ✅ Combines **managed + custom** rules (JSON/YAML or Rego)
-- ✅ Uses **deploymentTargets** (like in Landing Zone Accelerator) to define scope
-- ✅ Reports findings to **Security Hub**
+![Architecture](architecture.png)
+## 3. 🎯 Lab Objectives
 
----
-
-## 📁 Project Structure
+- ✅ Define a managed AWS Config rule (IAM_PASSWORD_POLICY)
+- ✅ Convert it into JSON format with tagging metadata
+- ✅ Write a CloudFormation template for reusable deployments
+- ✅ Configure GitHub Actions to validate + deploy rules on push
+- ✅ Store AWS credentials securely using GitHub Secrets
+## 4. 🗂️ Project Structure
 
 ```bash
-aws-config-rule-cicd-for-multi-region-grc/
-├── config-rules/           # Rule definitions (JSON/YAML)
-├── templates/              # CloudFormation/CDK stacks
-├── pipelines/              # CI/CD logic
-└── .github/workflows/      # GitHub Action to deploy rules
----
+.
+├── config-rules/
+│   └── cis-1-4-1-iam-password-policy.json
+├── templates/
+│   └── config-rule-template.yaml
+├── .github/
+│   └── workflows/
+│       └── config-rule-deploy.yml
+├── architecture.png
+└── README.md
+## 5. ⚙️ How It Works
 
-## 🧭 Architecture
+- All AWS Config rules are defined as `.json` files inside `config-rules/`
+- Rules are deployed via `templates/config-rule-template.yaml`
+- On every Git push to `config-rules/` or `templates/`, GitHub Actions:
+  - Validates syntax
+  - Loads AWS credentials from `Secrets`
+  - Runs `aws cloudformation deploy` to apply the rule
+## 6. 🚀 CI/CD Pipeline (GitHub Actions)
 
-This pipeline uses GitHub Actions (or CodePipeline) to deploy AWS Config rules across multiple accounts and regions using Infrastructure-as-Code. It supports both AWS-managed rules and custom ones defined in JSON, YAML, or Rego.
+| Stage                     | Description                             |
+|---------------------------|-----------------------------------------|
+| `Checkout`                | Fetches code from GitHub repo           |
+| `Configure AWS Credentials` | Loads from `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` |
+| `CloudFormation Deploy`   | Applies the latest Config rule via CLI  |
+## 7. 🧠 Skills Demonstrated
 
-### 🔄 Flow Summary:
+- AWS Config (managed rule deployment)
+- CloudFormation (parameterized infrastructure as code)
+- GitHub Actions (automated CI/CD pipelines)
+- Secrets management with GitHub
+- Compliance-as-Code (GRC automation workflows)
+- IAM and Security Governance
+## 8. 📚 Resources
 
-1. **Developer commits Config rule definition(s)** to the `config-rules/` folder
-2. **GitHub Action pipeline** is triggered
-3. CI/CD logic parses a `deploymentTargets.yaml` file to map accounts and regions
-4. For each target:
-   - Deploys AWS Config rules via CloudFormation (or CDK)
-   - Tags each rule with compliance mappings (e.g., NIST, CIS)
-   - Publishes findings to Security Hub in central Audit account
-
-### 📊 Visual Architecture Diagram
-
-📌 ![Multi-Account Config Deployment](./architecture.png)
-
+- [AWS Config Documentation](https://docs.aws.amazon.com/config/latest/developerguide/)
+- [IAM Password Policy Rule (AWS Managed)](https://docs.aws.amazon.com/config/latest/developerguide/iam-password-policy.html)
+- [CloudFormation Resource Types](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html)
+- [GitHub Actions AWS CLI Setup](https://github.com/aws-actions/configure-aws-credentials)
+- [CIS AWS Foundations Benchmark](https://www.cisecurity.org/benchmark/amazon_web_services)
